@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7696658092326477703}
   - component: {fileID: 7696658092326477696}
   - component: {fileID: 7696658092326477702}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: TrafficBlock
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -45,9 +45,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80405d1a10768364fa66a0e557637276, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _timeMax: 2
-  _timeOverload: 0.2
-  _timeDelay: 0.5
+  _timeMax: 8
+  _timeOverload: 2
+  _timeDelay: 2
 --- !u!58 &7696658092326477702
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -74,7 +74,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7696658093529735860}
   - component: {fileID: 7696658093529735883}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}

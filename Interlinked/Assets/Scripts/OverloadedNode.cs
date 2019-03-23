@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(CircleCollider2D))]
-public class CongestionArea : MonoBehaviour
+public class OverloadedNode : MonoBehaviour
 {
     // Inspector Vars
     /// <summary>
@@ -22,6 +22,7 @@ public class CongestionArea : MonoBehaviour
     // Private Vars
     private SpriteRenderer _spriteRenderer;
     private Sprite[] _timerSprites;
+    private SocketedNode _parent;
 
     // Properties
     public float Timer { get; private set; }
@@ -29,6 +30,7 @@ public class CongestionArea : MonoBehaviour
     #region Unity Messages
     private void Awake()
     {
+        // Initialize
         _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         if (_spriteRenderer == null) Debug.LogError("Please place a sprite renderer in a child of " + name, this);
 
@@ -67,4 +69,14 @@ public class CongestionArea : MonoBehaviour
         }
     }
     #endregion
+
+    public static OverloadedNode SpawnCongestionZone(SocketedNode parent)
+    {
+        return Instantiate(Resources.Load<GameObject>("TrafficBlock"), parent.transform.position, Quaternion.identity).GetComponent<OverloadedNode>();
+    }
+
+    public void RemoveOverloadEffect()
+    {
+        Destroy(gameObject);
+    }
 }

@@ -6,16 +6,25 @@ public class NodeLink : MonoBehaviour
 {
     [SerializeField] private Socket _primary;
     [SerializeField] private Socket _secondary;
+    [SerializeField] private float _readyToAttatchResetTime = 0.5f;
 
     private const float _nodeSocketSpacing = 0.75f;
     private const string _linePointTag = "LinePoint";
+
     private Transform[] _linePoints = new Transform[5];
+    private List<Pop> _travellingPops = new List<Pop>();
+    private float _readyToAttatchTimer = 0f;
+
+    // Properties
+    protected bool ReadyToAttatch { get { return _readyToAttatchTimer <= 0; } }
 
     public int StartSocket { get; set; }
     public int EndSocket { get; set; }
     public bool IsValid { get; private set; }
     public SocketedNode Primary { get { return _primary.Parent; } }
     public SocketedNode Secondary { get { return _secondary.Parent; } }
+
+
 
     private void Awake()
     {
@@ -25,7 +34,31 @@ public class NodeLink : MonoBehaviour
     {
         InitializeLinePoints();
     }
-    
+    private void FixedUpdate()
+    {
+        // Decrement attatch reset timer
+        if (_readyToAttatchTimer > 0) _readyToAttatchTimer -= Time.fixedDeltaTime;
+
+        var path = GetPath();
+
+        for (int i = 0; i < _travellingPops.Count; i++)
+        {
+            var pop = _travellingPops[i];
+
+            // Move attatched pops
+            pop.transform.position = path[pop.CurrentLineSection + 1];
+
+            // Detatch pops at end of link
+            if (pop.CurrentLineSection == path.Length -1)
+            {
+                pop.transform.position = Secondary.transform.position;
+                pop.EndTravel();
+                DetatchPop(pop);
+            }
+        }
+    }
+
+
     public Vector3[] GetPath()
     {
         List<Vector3> path = new List<Vector3>();
@@ -51,6 +84,34 @@ public class NodeLink : MonoBehaviour
             throw new NodeNotContainedException(node + " is not contained inside nodelink " + name);
         }
     }
+
+    public bool AttatchPop(Pop pop)
+    {
+        if (ReadyToAttatch)
+        {
+            if (_travellingPops.Contains(pop)) return false;
+            else
+            {
+                var path = GetPath();
+                _readyToAttatchTimer = _readyToAttatchResetTime;
+
+                _travellingPops.Add(pop);
+
+                pop.CurrentLineSection = 0;
+                pop.transform.position = path[0];
+                pop.transform.LookAt(path[1]);
+                return true;
+            }
+        }
+        else
+        {
+            return false;
+        }
+    }
+    public void DetatchPop(Pop pop)
+    {
+        _travellingPops.Remove(pop);
+    }
     public void SetPrimary(Socket primary)
     {
         _primary = primary;
@@ -73,11 +134,6 @@ public class NodeLink : MonoBehaviour
 
         UpdateMidPoints();
     }
-    private void UpdateMidPoints()
-    {
-        _linePoints[2].position = (_linePoints[1].position + _linePoints[3].position) / 2;        
-    }
-
     public void InitializeLinePoints()
     {
         // Assign child refrences        
@@ -94,6 +150,11 @@ public class NodeLink : MonoBehaviour
             
         // Return true if validation complete
         IsValid = true;
+    }
+
+    private void UpdateMidPoints()
+    {
+        _linePoints[2].position = (_linePoints[1].position + _linePoints[3].position) / 2;
     }
 }
 public class NodeNotContainedException : Exception
