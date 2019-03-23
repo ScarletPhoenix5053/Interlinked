@@ -28,8 +28,9 @@ public class PlayerInput : MonoBehaviour
                         var link = Instantiate(Resources.Load<GameObject>("NodeLink").GetComponent<NodeLink>());
 
                         // connect to sockets
-                        _prevClickedSocket.AttatchLinkAsPrimary(link);
-                        currentSocket.AttatchLinkAsSecondary(link);
+                        _prevClickedSocket.AttatchLinkAsPrimary(ref link);
+                        currentSocket.AttatchLinkAsSecondary(ref link);
+                        Debug.Assert(link.Secondary == currentSocket.Parent);
 
                         // reset
                         _linkingNodes = false;

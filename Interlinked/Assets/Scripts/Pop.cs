@@ -30,23 +30,26 @@ public class Pop : MonoBehaviour
 
     private void MoveToDestination()
     {
+        // exit if cannot find node thru immediate connections
+        if (_destination == null)
+        {
+            // create obstruction instance
+            return;
+        }
+
         // Find link to dest node
         // check all connections
         foreach (NodeLink connection in _currentNode.Connections)
         {
+            if (connection.Secondary == null) continue;
+            Debug.Log("looped");
             if (connection.Secondary == _destination)
             {
                 _currentLink = connection;
                 break;
             }
         }
-
-        // exit if cannot find node thru immediate connections
-        if (_currentNode == null)
-        {
-            // create obstruction instance
-            return;
-        }
+        if (_currentLink == null) Debug.LogError("No link");
 
         // Otherwise start movement
         _travelling = true;
@@ -63,7 +66,7 @@ public class Pop : MonoBehaviour
             if (task.Hour == currentHour)
             {
                 _destination = task.Destination;
-                if (_logInfo) Debug.Log(name + "'s Destination was changed to " + _destination.name);
+                if (_logInfo && _destination != null) Debug.Log(name + "'s Destination was changed to " + _destination.name);
                 MoveToDestination();
                 return;
             }
@@ -73,6 +76,7 @@ public class Pop : MonoBehaviour
     private IEnumerator GoToDestinationRoutine()
     {
         // Get path
+        Debug.Assert(_currentLink != null);
         var path = _currentLink.GetPath();
 
         // Place pop on path

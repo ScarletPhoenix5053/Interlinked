@@ -15,7 +15,24 @@ public class SocketedNode : MonoBehaviour
     private List<Pop> _containedPops = new List<Pop>();
     private List<Socket> _sockets = new List<Socket>();
     
-    public List<NodeLink> Connections { get; private set; }
+    public List<NodeLink> Connections
+    {
+        get
+        {
+            var returnList = new List<NodeLink>();
+
+            foreach (Socket socket in _sockets)
+            {
+                if (!socket.InUse) continue;
+                Debug.Log("looped in node", socket);
+                Debug.Assert(socket.AttatchedLink != null);
+                Debug.Assert(socket.AttatchedLink.Secondary != null);
+                returnList.Add(socket.AttatchedLink);
+            }
+
+            return returnList;
+        }
+    }
 
     private void Awake()
     {
@@ -25,9 +42,11 @@ public class SocketedNode : MonoBehaviour
             _sockets.Add(Instantiate(Resources.Load<GameObject>("Socket"), transform).GetComponent<Socket>());
         }
         _sockets[0].transform.position += Vector3.up * _nodeSocketSpacing;
+        _sockets[0].Parent = this;
         _sockets[1].transform.position += Vector3.down * _nodeSocketSpacing;
         _sockets[1].transform.rotation = Quaternion.Euler(new Vector3(0, 0, 180));
         _sockets[1].OffsetDir = Vector3.down;
+        _sockets[1].Parent = this;
     }
 
     public void IncreaseLevel()
@@ -52,7 +71,8 @@ public class SocketedNode : MonoBehaviour
     {
         for (int i = 0; i < count; i++)
         {
-            var newPopObj = Instantiate(Resources.Load("Pop"), transform.position, Quaternion.identity, LevelManager.Instance.PopsContainer) as GameObject;
+            var obj = Resources.Load<GameObject>("Pop");
+            var newPopObj = Instantiate(obj, transform.position, obj.transform.rotation, LevelManager.Instance.PopsContainer) as GameObject;
             var newPop = newPopObj.GetComponent<Pop>();
             newPop.Routine = routine;
             newPop.Current = this;
