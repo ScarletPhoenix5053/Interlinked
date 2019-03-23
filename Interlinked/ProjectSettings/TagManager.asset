@@ -3,7 +3,13 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - LineStart
+  - LineStartExt
+  - LineEnd
+  - LineEndExt
+  - LineMid
+  - LinePoint
   layers:
   - Default
   - TransparentFX
