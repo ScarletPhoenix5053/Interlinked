@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class NodeLink : MonoBehaviour
 {
-    [SerializeField] private Node _primary;
-    [SerializeField] private Node _secondary;
+    [SerializeField] private Socket _primary;
+    [SerializeField] private Socket _secondary;
 
     private const float _nodeSocketSpacing = 0.75f;
     private const string _linePointTag = "LinePoint";
@@ -14,8 +14,8 @@ public class NodeLink : MonoBehaviour
     public int StartSocket { get; set; }
     public int EndSocket { get; set; }
     public bool IsValid { get; private set; }
-    public Node Primary { get { return _primary; } }
-    public Node Secondary { get { return _secondary; } }
+    public SocketedNode Primary { get { return _primary.Parent; } }
+    public SocketedNode Secondary { get { return _secondary.Parent; } }
 
     private void Awake()
     {
@@ -36,90 +36,41 @@ public class NodeLink : MonoBehaviour
         }
         return path.ToArray();
     }
-    public Node GetOther(Node node)
+    public SocketedNode GetOther(SocketedNode node)
     {
-        if (_primary == node)
+        if (Primary == node)
         {
-            return _secondary;
+            return Secondary;
         }
-        else if (_secondary == node)
+        else if (Secondary == node)
         {
-            return _primary;
+            return Primary;
         }
         else
         {
             throw new NodeNotContainedException(node + " is not contained inside nodelink " + name);
         }
     }
-    public void SetPrimary(Node primary)
+    public void SetPrimary(Socket primary)
     {
         _primary = primary;
 
         var pos = primary.transform.position;
 
-        switch (StartSocket)
-        {
-            case 0:
-                _linePoints[0].position = pos += Vector3.up * _nodeSocketSpacing;
-                _linePoints[1].position = pos += Vector3.up * _nodeSocketSpacing;
-                break;
-
-            case 1:
-                _linePoints[0].position = pos += Vector3.right * _nodeSocketSpacing;
-                _linePoints[1].position = pos += Vector3.right * _nodeSocketSpacing;
-                break;
-
-            case 2:
-                _linePoints[0].position = pos += Vector3.down * _nodeSocketSpacing;
-                _linePoints[1].position = pos += Vector3.down * _nodeSocketSpacing;
-                break;
-
-            case 3:
-                _linePoints[0].position = pos += Vector3.left * _nodeSocketSpacing;
-                _linePoints[1].position = pos += Vector3.left * _nodeSocketSpacing;
-                break;
-
-            default:
-                _linePoints[0].position = pos;
-                _linePoints[1].position = pos;
-                break;
-        }
+        _linePoints[0].position = pos;
+        _linePoints[1].position = pos += primary.OffsetDir.normalized * _nodeSocketSpacing;
 
         UpdateMidPoints();
     }
-    public void SetSecondary(Node secondary)
+    public void SetSecondary(Socket secondary)
     {
         _secondary = secondary;
 
         var pos = secondary.transform.position;
 
-        switch (StartSocket)
-        {
-            case 0:
-                _linePoints[4].position = pos += Vector3.up * _nodeSocketSpacing;
-                _linePoints[3].position = pos += Vector3.up * _nodeSocketSpacing;
-                break;
+        _linePoints[4].position = pos;
+        _linePoints[3].position = pos += secondary.OffsetDir.normalized * _nodeSocketSpacing;
 
-            case 1:
-                _linePoints[4].position = pos += Vector3.right * _nodeSocketSpacing;
-                _linePoints[3].position = pos += Vector3.right * _nodeSocketSpacing;
-                break;
-
-            case 2:
-                _linePoints[4].position = pos += Vector3.down * _nodeSocketSpacing;
-                _linePoints[3].position = pos += Vector3.down * _nodeSocketSpacing;
-                break;
-
-            case 3:
-                _linePoints[4].position = pos += Vector3.left * _nodeSocketSpacing;
-                _linePoints[3].position = pos += Vector3.left * _nodeSocketSpacing;
-                break;
-
-            default:
-                _linePoints[3].position = pos;
-                _linePoints[4].position = pos;
-                break;
-        }
         UpdateMidPoints();
     }
     private void UpdateMidPoints()

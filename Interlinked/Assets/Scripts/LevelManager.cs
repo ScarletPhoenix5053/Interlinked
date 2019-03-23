@@ -10,7 +10,7 @@ public class LevelManager : MonoBehaviour
     [SerializeField] private Routine _defaultRoutine;
 
     // Private fields
-    private List<Node> _nodes = new List<Node>();
+    private List<SocketedNode> _nodes = new List<SocketedNode>();
 
     // Properties
     public static LevelManager Instance { get; private set; }
@@ -30,28 +30,13 @@ public class LevelManager : MonoBehaviour
         {
             foreach (Transform child in _nodesContainter)
             {
-                Node node;
-                if (node = child.GetComponent<Node>())
+                SocketedNode node;
+                if (node = child.GetComponent<SocketedNode>())
                 {
                     _nodes.Add(node);
                 }
             }
         }
-
-        // Spawn nodes
-        _nodes[0].SpawnPops(1, _defaultRoutine);
-
-        // Link nodes
-        _nodes[0].ConnectTo(_nodes[1]);
-        Debug.Assert(_nodes[0].Connections[0].StartSocket == 0);
-        Debug.Assert(_nodes[0].Connections[0].EndSocket == 0);
-        Debug.Assert(_nodes[0].NCI == 1);
-        Debug.Assert(_nodes[1].NCI == 1);
-        _nodes[1].ConnectTo(_nodes[0]);
-        Debug.Assert(_nodes[1].Connections[0].StartSocket == 1);
-        Debug.Assert(_nodes[1].Connections[0].EndSocket == 1);
-        Debug.Assert(_nodes[0].NCI == 2);
-        Debug.Assert(_nodes[1].NCI == 2);
 
         // Config events
         OnTrafficOverload += RestartGame;

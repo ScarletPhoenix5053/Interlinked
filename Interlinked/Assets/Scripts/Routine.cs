@@ -34,9 +34,9 @@ public class Routine
 public struct RoutineTask
 {
     public int Hour;
-    public Node Destination;
+    public SocketedNode Destination;
 
-    public RoutineTask(int hour, Node destination)
+    public RoutineTask(int hour, SocketedNode destination)
     {
         Hour = hour;
         Destination = destination;

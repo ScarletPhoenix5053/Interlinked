@@ -7,13 +7,13 @@ public class Pop : MonoBehaviour
     [SerializeField] private bool _logInfo;
     [SerializeField] private Routine _routine;
 
-    [SerializeField] private Node _nodeA;
-    [SerializeField] private Node _nodeB;
+    [SerializeField] private SocketedNode _nodeA;
+    [SerializeField] private SocketedNode _nodeB;
 
     [SerializeField] private float _moveSpeed;
 
-    private Node _currentNode;
-    private Node _destination;
+    private SocketedNode _currentNode;
+    private SocketedNode _destination;
     private NodeLink _currentLink;
 
     private bool _travelling;
@@ -21,7 +21,7 @@ public class Pop : MonoBehaviour
     public bool Obstructed { get; private set; }
 
     public Routine Routine { get { return _routine; } set { _routine = value; } }
-    public Node Current { get { return _currentNode; } set { _currentNode = value; } }
+    public SocketedNode Current { get { return _currentNode; } set { _currentNode = value; } }
 
     private void Awake()
     {
