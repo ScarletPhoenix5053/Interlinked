@@ -21,8 +21,8 @@ public class NodeLink : MonoBehaviour
     public int StartSocket { get; set; }
     public int EndSocket { get; set; }
     public bool IsValid { get; private set; }
-    public SocketedNode Primary { get { return _primary.Parent; } }
-    public SocketedNode Secondary { get { return _secondary.Parent; } }
+    public SocketedNode Primary { get { return _primary.Parent != null ? _primary.Parent : null; } }
+    public SocketedNode Secondary { get { return _secondary.Parent != null ? _secondary.Parent : null; } }
 
 
 
@@ -46,14 +46,14 @@ public class NodeLink : MonoBehaviour
             var pop = _travellingPops[i];
 
             // Move attatched pops
-            pop.transform.position = path[pop.CurrentLineSection + 1];
+            if (pop.CurrentLineSection + 1 < path.Length) pop.transform.position = path[pop.CurrentLineSection + 1];
             pop.CurrentLineSection++;
 
             // Detatch pops at end of link
             if (pop.CurrentLineSection == path.Length -1)
             {
                 pop.transform.position = Secondary.transform.position;
-                pop.EndTravel();
+                pop.EndTravel(this);
                 DetatchPop(pop);
             }
             // Look at next pos

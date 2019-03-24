@@ -6,7 +6,7 @@ public class SocketedNode : MonoBehaviour
 {
     // Insepctor vars
     [Header("Level")]
-    [SerializeField][Range(1,3)] private int _level = 1;
+    [SerializeField][Range(2,2)] private int _level = 2;
     [Header("Socket Count")]
     [SerializeField] private int _socketCountLv1 = 2;
     [SerializeField] private int _socketCountLv2 = 4;
@@ -48,6 +48,7 @@ public class SocketedNode : MonoBehaviour
             foreach (Socket socket in _sockets)
             {
                 if (!socket.InUse) continue;
+                if (socket.AttatchedLink.Secondary == this) continue;
                 returnList.Add(socket.AttatchedLink);
             }
 
@@ -55,20 +56,37 @@ public class SocketedNode : MonoBehaviour
         }
     }
     public List<Pop> ContainedPops { get { return _containedPops; } set { _containedPops = value; } }
+    public int PopCount { get { return _containedPops.Count; } }
+
+    public SocketedNode AStarParent { get; set; }
+    public float F { get { return G + H; } }
+    public float G { get; set; }
+    public float H { get; set; }
 
     private void Awake()
     {
-        // Initialize at level 1
-        for (int i = 0; i < _socketCountLv1; i++)
+        // Initialize at level 2
+        for (int i = 0; i < _socketCountLv2; i++)
         {
             _sockets.Add(Instantiate(Resources.Load<GameObject>("Socket"), transform).GetComponent<Socket>());
         }
         _sockets[0].transform.position += Vector3.up * _nodeSocketSpacing;
         _sockets[0].Parent = this;
-        _sockets[1].transform.position += Vector3.down * _nodeSocketSpacing;
-        _sockets[1].transform.rotation = Quaternion.Euler(new Vector3(0, 0, 180));
-        _sockets[1].OffsetDir = Vector3.down;
+
+        _sockets[1].transform.position += Vector3.right * _nodeSocketSpacing;
+        _sockets[1].transform.rotation = Quaternion.Euler(new Vector3(0, 0, -90));
+        _sockets[1].OffsetDir = Vector3.right;
         _sockets[1].Parent = this;
+
+        _sockets[2].transform.position += Vector3.down * _nodeSocketSpacing;
+        _sockets[2].transform.rotation = Quaternion.Euler(new Vector3(0, 0, 180));
+        _sockets[2].OffsetDir = Vector3.down;
+        _sockets[2].Parent = this;
+
+        _sockets[3].transform.position += Vector3.left * _nodeSocketSpacing;
+        _sockets[3].transform.rotation = Quaternion.Euler(new Vector3(0, 0, -270));
+        _sockets[3].OffsetDir = Vector3.left;
+        _sockets[3].Parent = this;
     }
     private void FixedUpdate()
     {
@@ -115,6 +133,11 @@ public class SocketedNode : MonoBehaviour
 
             _containedPops.Add(newPop);
         }
+    }
+
+    public float DistTo(SocketedNode otherNode)
+    {
+        return Vector3.Distance(transform.position, otherNode.transform.position);
     }
 
     /// <summary>
