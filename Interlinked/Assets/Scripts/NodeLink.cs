@@ -47,6 +47,7 @@ public class NodeLink : MonoBehaviour
 
             // Move attatched pops
             pop.transform.position = path[pop.CurrentLineSection + 1];
+            pop.CurrentLineSection++;
 
             // Detatch pops at end of link
             if (pop.CurrentLineSection == path.Length -1)
@@ -54,6 +55,11 @@ public class NodeLink : MonoBehaviour
                 pop.transform.position = Secondary.transform.position;
                 pop.EndTravel();
                 DetatchPop(pop);
+            }
+            // Look at next pos
+            else
+            {
+                pop.transform.LookAt(path[pop.CurrentLineSection + 1], Vector3.back);
             }
         }
     }
@@ -99,7 +105,7 @@ public class NodeLink : MonoBehaviour
 
                 pop.CurrentLineSection = 0;
                 pop.transform.position = path[0];
-                pop.transform.LookAt(path[1]);
+                pop.transform.LookAt(path[1], Vector3.back);
                 return true;
             }
         }

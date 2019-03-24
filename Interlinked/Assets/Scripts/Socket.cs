@@ -4,7 +4,7 @@ using System.Collections;
 public class Socket : MonoBehaviour
 {
     private SpriteRenderer _spriteRenderer;
-    private NodeLink _attatchedLink;
+    [SerializeField] private NodeLink _attatchedLink;
 
     public SocketedNode Parent { get; set; }
     public Vector3 OffsetDir { get; set; }

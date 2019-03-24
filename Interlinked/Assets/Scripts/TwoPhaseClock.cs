@@ -48,7 +48,7 @@ public class TwoPhaseClock : MonoBehaviour
             else
             {
                 _hourCurrent++;
-                OnHourTick?.Invoke(_hourCurrent);
+                OnHourTick?.Invoke(1);
                 _clockRenderer.enabled = true;
             }
 

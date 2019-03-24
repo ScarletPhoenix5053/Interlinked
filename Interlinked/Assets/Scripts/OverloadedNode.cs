@@ -57,8 +57,6 @@ public class OverloadedNode : MonoBehaviour
             var spriteIndex = Mathf.RoundToInt(Mathf.Clamp(progress * 13, 0, 12));
 
             // assign sprite by angle
-            Debug.Log(spriteIndex);
-            Debug.Log(_timerSprites.Length);
             _spriteRenderer.sprite = _timerSprites[spriteIndex];
         }
 

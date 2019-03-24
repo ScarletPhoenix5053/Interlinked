@@ -10,15 +10,17 @@ public class Pop : MonoBehaviour
     [SerializeField] private float _stepDelay = 0.06f;
 
     private SocketedNode _currentNode;
+
+    private SocketedNode _currentDestination;
     private List<SocketedNode> _destinationQueue = new List<SocketedNode>();
 
     private NodeLink _currentLink;
+    private List<NodeLink> _linkQueue = new List<NodeLink>();
 
     private bool _travelling;
-
-    // Properties
-    protected SocketedNode Destination { get { return _destinationQueue[0]; } }
-
+    
+    // Propertie
+    public bool LogInfo { get { return _logInfo; } set { _logInfo = value; } }
     public Routine Routine { get { return _routine; } set { _routine = value; } }
     public SocketedNode Current { get { return _currentNode; } set { _currentNode = value; } }
     public int CurrentLineSection { get; set; }
@@ -31,59 +33,105 @@ public class Pop : MonoBehaviour
     {
         TwoPhaseClock.OnHourTick -= UpdateObjective;
     }
-
+    private void FixedUpdate()
+    {
+        TryMoveToDestination();
+    }
 
 
     public void EndTravel()
     {
         _travelling = false;
+        if (_logInfo) Debug.Log("Ending a travel");
 
         _currentNode = _currentLink.Secondary;
-        _currentNode.ContainedPops.Add(this);
         _currentLink = null;
+        
+        _currentNode.ContainedPops.Add(this);
     }
     public void StartTravel()
     {
         _travelling = true;
+        if (_logInfo) Debug.Log("Starting a travel");
 
         _currentNode.ContainedPops.Remove(this);
-        _currentNode = null;
 
-        StartCoroutine(AttemptToAttatchRoutine());
+        // Adjust destination
+        _destinationQueue.Remove(_currentDestination);
+        UpdateDestination();
     }
 
-    private void MoveToDestination()
+    private void TryMoveToDestination()
     {
         // escape if already travelling
-        if (_travelling) { if (_logInfo) Debug.Log("Already travelling, cannot alter course"); return; }
+        if (_travelling) { if (_logInfo) /*Debug.Log("Already travelling, cannot alter course"); */return; }
+        
+        if (_currentDestination == _currentNode)
+        {
+            if (_logInfo) Debug.Log("Purging a destination because " + name + " is already there");
+            _destinationQueue.Remove(_currentDestination);
+            UpdateDestination();
+        }
 
-        // check all connections
+        // Find path to new destination
         foreach (NodeLink connection in _currentNode.Connections)
         {
             if (connection.Secondary == null) continue;
-            if (connection.Secondary == Destination)
+            if (connection.Secondary == _currentDestination)
             {
                 _currentLink = connection;
                 break;
             }
         }
-        
+
         // exit if cannot find node thru immediate connections
-        if (Destination == null || _currentLink == null)
+        if (_currentDestination == null || _currentLink == null)
         {
             return;
         }
 
         // Otherwise start movement
-        StartTravel();
+        if (_currentLink.AttatchPop(this)) StartTravel();
 
-        // Adjust destination
-        _destinationQueue.Remove(Destination);
     }
     private void UpdateObjective(int currentHour)
     {
         if (_routine == null) { if (_logInfo) Debug.LogError("No routine found, cannot update objective."); return; }
         //if (_travelling) { if (_logInfo) Debug.Log("Already travelling, cannot alter course"); return; }
+
+        // Find new destination
+        SocketedNode newDest = null;
+        foreach (RoutineTask task in _routine.GetTasks())
+        {
+            if (task.Hour == currentHour)
+            {
+                newDest = task.Destination;
+            }
+        }
+
+        // Break if no new dest on this update cycle
+        if (newDest == null) return;
+
+        // Find first path to finaldest
+        List<SocketedNode> pathToFinalDest = null;
+        var pathIsOneStep = false;
+        foreach (NodeLink connection in _currentNode.Connections)
+        {
+            if (connection.Secondary == null) continue;
+            if (connection.Secondary == newDest)
+            {
+                pathIsOneStep = true;
+                break;
+            }
+        }
+
+        // Add nodes to destination queue in order
+        if (pathIsOneStep && !_destinationQueue.Contains(newDest)) _destinationQueue.Add(newDest);
+        UpdateDestination();
+
+        /*
+        // log destination-queue
+        if (_logInfo) Debug.Log(_destinationQueue.Count);
 
         var tasks = _routine.GetTasks();
         foreach (RoutineTask task in tasks)
@@ -95,11 +143,23 @@ public class Pop : MonoBehaviour
                 MoveToDestination();
                 return;
             }
-        }
+        }*/
     }
-
-    private IEnumerator AttemptToAttatchRoutine()
+    
+    private void UpdateDestination()
     {
-        while (!_currentLink.AttatchPop(this)) yield return new WaitForFixedUpdate();
+        if (_destinationQueue.Count > 0)
+        {
+            _currentDestination = _destinationQueue[0];
+            if (_logInfo)
+            {
+                Debug.Log(name + "'s Destination was changed to " + _currentDestination.name);
+                Debug.Log(name + "'s destination queue now has " + _destinationQueue.Count + " entries");
+            }
+        }
+        else
+        {
+            _currentDestination = null;
+        }
     }
 }

@@ -123,9 +123,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e2e39edc9d1e694ab14b6b05174c057, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _logInfo: 1
+  _logInfo: 0
   _routine:
     _tasks: []
-  _nodeA: {fileID: 0}
-  _nodeB: {fileID: 0}
-  _moveSpeed: 0
+  _stepDelay: 0.06

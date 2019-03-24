@@ -19,6 +19,7 @@ public class PlayerInput : MonoBehaviour
             {
                 // Check if hit socket
                 Socket currentSocket;
+                Debug.Log("input");
                 if (currentSocket = screenToPoint.collider.GetComponent<Socket>())
                 {
                     // If already linking nodes

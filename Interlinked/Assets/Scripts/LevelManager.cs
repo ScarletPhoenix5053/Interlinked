@@ -40,6 +40,7 @@ public class LevelManager : MonoBehaviour
 
         // Spawn pops
         _nodes[0].SpawnPops(5, _defaultRoutine);
+        _nodes[0].ContainedPops[1].LogInfo = true;
 
         // Config events
         OnTrafficOverload += RestartGame;
