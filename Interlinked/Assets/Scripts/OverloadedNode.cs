@@ -19,6 +19,8 @@ public class OverloadedNode : MonoBehaviour
     /// </summary>
     [SerializeField] private float _timeDelay = 1f;
 
+    [SerializeField] private GameObject EXPLOSION;
+
     // Private Vars
     private SpriteRenderer _spriteRenderer;
     private Sprite[] _timerSprites;
@@ -63,7 +65,10 @@ public class OverloadedNode : MonoBehaviour
         // Trigger game end if time is up
         if (Timer > _timeMax + _timeOverload)
         {
+            Shaker.ShakeHard();
+            if (EXPLOSION != null) Instantiate(EXPLOSION, transform.position, Quaternion.identity);
             LevelManager.TiggerTraficOverload();
+            RemoveOverloadEffect();
         }
     }
     #endregion

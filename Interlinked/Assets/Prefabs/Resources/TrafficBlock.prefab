@@ -48,6 +48,8 @@ MonoBehaviour:
   _timeMax: 8
   _timeOverload: 2
   _timeDelay: 2
+  EXPLOSION: {fileID: 3734698514420174199, guid: c75d87cc6cb327c44af5d473e1bf7f74,
+    type: 3}
 --- !u!58 &7696658092326477702
 CircleCollider2D:
   m_ObjectHideFlags: 0

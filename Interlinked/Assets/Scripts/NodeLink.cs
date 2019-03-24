@@ -59,7 +59,7 @@ public class NodeLink : MonoBehaviour
             // Look at next pos
             else
             {
-                pop.transform.LookAt(path[pop.CurrentLineSection + 1], Vector3.back);
+                if (pop.CurrentLineSection + 1 < path.Length) pop.transform.LookAt(path[pop.CurrentLineSection + 1], Vector3.back);
             }
         }
     }

@@ -20,6 +20,8 @@ public class LevelManager : MonoBehaviour
     [SerializeField] private int _resource = 100;
     [SerializeField] private int _resourceGain = 1;
     [SerializeField] private int _resourceDrainMultiplier = 3;
+    [Header("End")]
+    [SerializeField] private GameOver _gameOver;
 
     // Private fields
     private List<SocketedNode> _nodes = new List<SocketedNode>();
@@ -61,7 +63,7 @@ public class LevelManager : MonoBehaviour
         _nodes[0].SpawnPops(5, _routineA);
         
         // Config events
-        OnTrafficOverload += RestartGame;
+        OnTrafficOverload += GameOver;
     }
     private void FixedUpdate()
     {
@@ -132,9 +134,9 @@ public class LevelManager : MonoBehaviour
         var targetNode = _nodesContainter.GetChild(targetNodeIndex).GetComponent<SocketedNode>();
         return targetNode;
     }
-    private void RestartGame()
+    private void GameOver()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        _gameOver.SetGameOver();
     }
 }
 public delegate void TrafficOverloadEventHandler();
